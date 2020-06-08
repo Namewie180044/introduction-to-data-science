@@ -1,0 +1,123 @@
+---
+title: "FINAL"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, results='hide', warning=FALSE, error=FALSE, message=FALSE}
+library(tidyverse)
+data(mpg)
+```
+## Soalan 2 / *Question2*
+<div style='font-weight: 600;'> 
+Jawab soalan di bawah dengan menulis kod-kod R yang bersesuaian. Ubahkan menjadi dokumen word markdown dengan penerangan yang munasabah untuk setiap langkah. Hantarkan fail R markdown tersebut satu hari selepas soalan dibuka di ruangan penghantaran di bawah. 
+ 
+*Answer the question below by writing the appropriate R codes. Transform them into an R markdown word document with proper explanation for each step. Submit the R markdown file one day after the question is opened to the submission area below.*
+</div>
+
+### Question a
+<div style='color: blue; font-weight: 500;'>
+a. Mulakan Markdown anda dengan pembuka kata menerangkan apa itu Pemvisualan Data dan kegunaannya.
+
+   *Begin your markdown with an introduction explaining what is data visualization and its use.*
+</div>
+
+Data visualization is the graphical representation of information and data. By using visual elements like charts, graphs, and maps, data visualization tools provide an accessible way to see and understand trends, outliers, and patterns in data. As the “age of Big Data” kicks into high-gear, visualization is an increasingly key tool to make sense of the trillions of rows of data generated every day. A good visualization tells a story, removing the noise from data and highlighting the useful information.
+
+
+### Question b
+<div style='color: blue; font-weight: 500;'>
+b. Gunakan set data yang sama untuk semua geraf. Berikan penerangan mengenai set data tersebut.
+ 
+   *Use the same dataset for all graphs. Provide some explanation regarding the dataset.*
+</div>
+
+We can see that the dataset has 234 rows and 11 columns, and it contains `r sum(is.na(mpg))` null field.
+```{r}
+dim(mpg)
+```
+```{r}
+sum(is.na(mpg))
+```
+
+As the dataset is from __ggplot2__, we can see the explanation of each variable using the __?*dataset*__ command
+```{r, eval=FALSE}
+?mpg
+```
+Features    | Explanation
+------------|---------------
+manufacturer| manufacturer name
+model       | model name
+displ       | engine displacemnt, in litres
+year        | year of manufacture
+cyl         | number of cylinders
+trans       | type of transmission
+drv         | the type of drive train, where f=font-wheel drive, r=rear wheel drive, 4=4wd
+cty         | city miles per gallon
+hwy         | highway miles per gallon
+fl          | fuel type
+class       | "type" of car
+
+Out of 11 variables:
+
+6 are categorical variables
+
+ - __manufacturer__, __model__, __trans__, __drv__, __f1__, and __class__
+
+5 are numerical variables
+
+ - __displ__, __year__, __cyl__, __cty__, and __hwy__
+```{r}
+summary(mpg)
+```
+
+Let's have a peek at the first five rows of __mpg__ dataset
+```{r}
+head(mpg)
+```
+
+
+### Question c
+<div style='color: blue; font-weight: 500;'>
+c. Tuliskan kod-kod R yang menghasilkan geraf-geraf scatterplot, histogram, dan boxplot. Jelaskan kegunaan setiap geraf dan berikan penerangan ringkas bagi setiap geraf yang terhasil. 
+ 
+   *Write R codes to produce a scatterplot, a histogram, and a boxplot. Explain the use of each graph and provide a short explanation for each produced graph.*
+</div>
+
+__<u>Scatter Plot</u>__
+
+Scatter plots are used to plot data points on a horizontal and a vertical axis in the attempt to show how much one variable is affected by another.
+```{r}
+ggplot(mpg, aes(x=displ, y=hwy)) + 
+    geom_point(mapping=aes(color=class), size=2.5) + 
+    labs(title='Fuel Efficiency (Highway)', 
+         x='displ (engine displacement, in litres)', 
+         y='hwy (highway miles per gallon)') + 
+    scale_color_brewer(palette='Accent')
+```
+
+Here, we investigate the fuel efficiency by plotting __hwy__ against __displ__ and we see that fuel efficiency generally decreases with engine size. Nevertheless, two seaters (sport cars) are an exception maybe because of their light weight.
+
+__<u>Histogram</u>__
+
+Histograms are used to graphically summarize the distribution of a variable.
+```{r}
+ggplot(mpg) + 
+    geom_histogram(mapping=aes(cty), bins=10) + 
+    labs(title='Distribution of City Miles per Gallon')
+```
+
+From the plot, we can see that the distribution of cty (city miles per gallon) is not symmetric but skewed to the right, this means that the distribution of the variable is most probably not normal. However, normalizing transformation such as the box-cox transformation can be considered.
+
+__<u>Boxplot</u>__
+
+Boxplots are used in explanatory data analysis to visually show the distribution of numerical data and skewness through displaying the data quartiles (or percentiles) and averages. It can also be useful when comparing distributions between many groups.
+```{r}
+ggplot(mpg) + 
+    geom_boxplot(aes(drv, hwy)) + 
+    labs(title='Fuel Efficiency Distribution (Highway) by Drive Train Types') + 
+    scale_x_discrete(labels=c('4'='4 wheels drive', 'f'='font-wheel drive', 'r'='rear wheel drive'))
+```
+
+By using boxplot here, we compare the distribution of highway miles per gallon for three different types of drive train. We can see that the distributions are all not quite similar. Front-wheel drive (f) with the highest median outperforms two other types, and there are some outliers in it which could be caused by classes of the vehicles.
